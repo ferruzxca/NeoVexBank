@@ -1,25 +1,29 @@
 package com.innovex.neovexbank.dto;
 
 public class TransferRequest {
-    private Long fromAccountId;
-    private Long toAccountId;
+    private Long senderId;
+    private Long recipientId;
     private Double amount;
+    private String concept;
 
-    // Getters y Setters
-    public Long getFromAccountId() {
-        return fromAccountId;
+    // Constructor vacío
+    public TransferRequest() {}
+
+    // Getters y setters
+    public Long getSenderId() {
+        return senderId;
     }
 
-    public void setFromAccountId(Long fromAccountId) {
-        this.fromAccountId = fromAccountId;
+    public void setSenderId(Long senderId) {
+        this.senderId = senderId;
     }
 
-    public Long getToAccountId() {
-        return toAccountId;
+    public Long getRecipientId() {
+        return recipientId;
     }
 
-    public void setToAccountId(Long toAccountId) {
-        this.toAccountId = toAccountId;
+    public void setRecipientId(Long recipientId) {
+        this.recipientId = recipientId;
     }
 
     public Double getAmount() {
@@ -28,5 +32,13 @@ public class TransferRequest {
 
     public void setAmount(Double amount) {
         this.amount = amount;
+    }
+
+    public String getConcept() {
+        return concept;
+    }
+
+    public void setConcept(String concept) {
+        this.concept = concept;
     }
 }

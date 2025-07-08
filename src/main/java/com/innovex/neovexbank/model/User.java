@@ -1,40 +1,49 @@
 package com.innovex.neovexbank.model;
 
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
 import java.util.List;
 
 @Entity
-@Table(name = "user")
-public class User {
+@Table(name = "users")
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String fullName;
     private String email;
     private String password;
-    private String role;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private Customer customer;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<LoginSession> loginSessions;
+    public User() {}
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<PasswordChangeLog> passwordChangeLogs;
+    public User(String fullName, String email, String password, Role role) {
+        this.fullName = fullName;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<AuditLog> auditLogs;
-
-    // Getters y setters
+    // Getters y Setters
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public String getEmail() {
@@ -45,6 +54,7 @@ public class User {
         this.email = email;
     }
 
+    @Override
     public String getPassword() {
         return password;
     }
@@ -53,43 +63,43 @@ public class User {
         this.password = password;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 
-    public Customer getCustomer() {
-        return customer;
+    // Métodos obligatorios de UserDetails
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
+    @Override
+    public String getUsername() {
+        return email;
     }
 
-    public List<LoginSession> getLoginSessions() {
-        return loginSessions;
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
     }
 
-    public void setLoginSessions(List<LoginSession> loginSessions) {
-        this.loginSessions = loginSessions;
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
     }
 
-    public List<PasswordChangeLog> getPasswordChangeLogs() {
-        return passwordChangeLogs;
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
     }
 
-    public void setPasswordChangeLogs(List<PasswordChangeLog> passwordChangeLogs) {
-        this.passwordChangeLogs = passwordChangeLogs;
-    }
-
-    public List<AuditLog> getAuditLogs() {
-        return auditLogs;
-    }
-
-    public void setAuditLogs(List<AuditLog> auditLogs) {
-        this.auditLogs = auditLogs;
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }

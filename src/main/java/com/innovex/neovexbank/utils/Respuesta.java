@@ -1,12 +1,16 @@
 package com.innovex.neovexbank.utils;
 
 public class Respuesta {
-    private String mensaje;
-    private boolean ok;
 
-    public Respuesta(String mensaje, boolean ok) {
+    private String mensaje;
+    private boolean estado;
+
+    public Respuesta() {
+    }
+
+    public Respuesta(String mensaje, boolean estado) {
         this.mensaje = mensaje;
-        this.ok = ok;
+        this.estado = estado;
     }
 
     public String getMensaje() {
@@ -17,11 +21,11 @@ public class Respuesta {
         this.mensaje = mensaje;
     }
 
-    public boolean isOk() {
-        return ok;
+    public boolean isEstado() {
+        return estado;
     }
 
-    public void setOk(boolean ok) {
-        this.ok = ok;
+    public void setEstado(boolean estado) {
+        this.estado = estado;
     }
 }
