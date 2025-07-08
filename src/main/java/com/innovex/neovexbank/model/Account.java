@@ -1,7 +1,6 @@
 package com.innovex.neovexbank.model;
 
 import jakarta.persistence.*;
-import java.util.List;
 
 @Entity
 @Table(name = "account")
@@ -11,41 +10,35 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "account_number", nullable = false, unique = true)
     private String accountNumber;
 
-    private Double balance;
+    @Column(nullable = false)
+    private Double balance = 0.0;
 
-    private String status;
-
-    @ManyToOne
-    @JoinColumn(name = "customer_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_type_id")
     private AccountType accountType;
 
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
-    private List<Transaction> transactions;
+    @Column
+    private String status;
 
-    @OneToMany(mappedBy = "senderAccount", cascade = CascadeType.ALL)
-    private List<Transfer> sentTransfers;
+    public Account() {}
 
-    @OneToMany(mappedBy = "receiverAccount", cascade = CascadeType.ALL)
-    private List<Transfer> receivedTransfers;
-
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
-    private List<Statement> statements;
-
-    // Getters y setters
+    public Account(String accountNumber, Double balance, Customer customer, AccountType accountType, String status) {
+        this.accountNumber = accountNumber;
+        this.balance = balance;
+        this.customer = customer;
+        this.accountType = accountType;
+        this.status = status;
+    }
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getAccountNumber() {
@@ -64,14 +57,6 @@ public class Account {
         this.balance = balance;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
     public Customer getCustomer() {
         return customer;
     }
@@ -88,35 +73,11 @@ public class Account {
         this.accountType = accountType;
     }
 
-    public List<Transaction> getTransactions() {
-        return transactions;
+    public String getStatus() {
+        return status;
     }
 
-    public void setTransactions(List<Transaction> transactions) {
-        this.transactions = transactions;
-    }
-
-    public List<Transfer> getSentTransfers() {
-        return sentTransfers;
-    }
-
-    public void setSentTransfers(List<Transfer> sentTransfers) {
-        this.sentTransfers = sentTransfers;
-    }
-
-    public List<Transfer> getReceivedTransfers() {
-        return receivedTransfers;
-    }
-
-    public void setReceivedTransfers(List<Transfer> receivedTransfers) {
-        this.receivedTransfers = receivedTransfers;
-    }
-
-    public List<Statement> getStatements() {
-        return statements;
-    }
-
-    public void setStatements(List<Statement> statements) {
-        this.statements = statements;
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
