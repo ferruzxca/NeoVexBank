@@ -30,6 +30,4 @@ public class AccountController {
         response.put("balance", balance);
         return ResponseEntity.ok(response);
     }
-
-    // Aquí irían el resto de endpoints (/account/{id}, /account/create, etc.)
 }
