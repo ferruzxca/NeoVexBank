@@ -1,8 +1,8 @@
 package com.innovex.neovexbank.controller;
 
 import com.innovex.neovexbank.dto.DepositRequest;
-import com.innovex.neovexbank.dto.TransferRequest;
 import com.innovex.neovexbank.dto.WithdrawRequest;
+import com.innovex.neovexbank.dto.TransferRequest;
 import com.innovex.neovexbank.model.Transaction;
 import com.innovex.neovexbank.service.TransactionService;
 import com.innovex.neovexbank.utils.Respuesta;
@@ -22,25 +22,19 @@ public class TransactionController {
     @PostMapping("/deposit")
     public ResponseEntity<Respuesta> deposit(@RequestBody DepositRequest request) {
         Respuesta res = transactionService.deposit(request);
-        return ResponseEntity
-                .status(res.isEstado() ? 200 : 400)
-                .body(res);
+        return ResponseEntity.status(res.isEstado() ? 200 : 400).body(res);
     }
 
     @PostMapping("/withdraw")
     public ResponseEntity<Respuesta> withdraw(@RequestBody WithdrawRequest request) {
         Respuesta res = transactionService.withdraw(request);
-        return ResponseEntity
-                .status(res.isEstado() ? 200 : 400)
-                .body(res);
+        return ResponseEntity.status(res.isEstado() ? 200 : 400).body(res);
     }
 
     @PostMapping("/transfer")
     public ResponseEntity<Respuesta> transfer(@RequestBody TransferRequest request) {
         Respuesta res = transactionService.transfer(request);
-        return ResponseEntity
-                .status(res.isEstado() ? 200 : 400)
-                .body(res);
+        return ResponseEntity.status(res.isEstado() ? 200 : 400).body(res);
     }
 
     @GetMapping("/{accountId}")

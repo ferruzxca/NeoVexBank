@@ -1,19 +1,21 @@
 package com.innovex.neovexbank.dto;
 
-public class WithdrawRequest {
+public class TransactionRequest {
     private Long accountId;
+    private String type;         // "DEPÓSITO" o "RETIRO"
     private Double amount;
-    private String description; // <-- Añadido
+    private String description;
 
-    // Getter y Setter para accountId
+    // Getters y setters
     public Long getAccountId() { return accountId; }
     public void setAccountId(Long accountId) { this.accountId = accountId; }
 
-    // Getter y Setter para amount
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
+
     public Double getAmount() { return amount; }
     public void setAmount(Double amount) { this.amount = amount; }
 
-    // Getter y Setter para description
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 }

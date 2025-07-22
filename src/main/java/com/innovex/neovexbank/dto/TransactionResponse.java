@@ -1,36 +1,21 @@
-package com.innovex.neovexbank.model;
+package com.innovex.neovexbank.dto;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "transaction")
-public class Transaction {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class TransactionResponse {
     private Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "account_id", nullable = false)
-    private Account account;
-
-    @Column(name = "type")
+    private Long accountId;
     private String type;
-
-    @Column(name = "amount", nullable = false)
     private Double amount;
-
-    @Column(name = "date", nullable = false)
     private LocalDateTime date;
-
     private String description;
 
     // Getters y setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public Account getAccount() { return account; }
-    public void setAccount(Account account) { this.account = account; }
+    public Long getAccountId() { return accountId; }
+    public void setAccountId(Long accountId) { this.accountId = accountId; }
 
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }

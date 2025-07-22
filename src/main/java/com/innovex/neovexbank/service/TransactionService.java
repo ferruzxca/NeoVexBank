@@ -8,104 +8,103 @@ import com.innovex.neovexbank.model.Transaction;
 import com.innovex.neovexbank.repository.AccountRepository;
 import com.innovex.neovexbank.repository.TransactionRepository;
 import com.innovex.neovexbank.utils.Respuesta;
-import java.time.LocalDateTime;
-import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 
 @Service
 public class TransactionService {
 
     @Autowired
-    private AccountRepository accountRepo;
-
+    private TransactionRepository transactionRepository;
     @Autowired
-    private TransactionRepository transactionRepo;
+    private AccountRepository accountRepository;
 
     public Respuesta deposit(DepositRequest request) {
-        Account account = accountRepo.findById(request.getAccountId())
-            .orElseThrow(() -> new RuntimeException("Cuenta no encontrada"));
-        double amount = request.getAmount();
-        if (amount <= 0 || amount > 20000) {
-            return new Respuesta("Monto inválido para depósito", false);
+        Optional<Account> accountOpt = accountRepository.findById(request.getAccountId());
+        if (!accountOpt.isPresent()) {
+            return new Respuesta("Cuenta no encontrada", false);
         }
-        account.setBalance(account.getBalance() + amount);
-        accountRepo.save(account);
+        Account account = accountOpt.get();
+        account.setBalance(account.getBalance() + request.getAmount());
+        accountRepository.save(account);
 
-        Transaction tx = new Transaction();
-        tx.setAccount(account);
-        tx.setType("DEPOSIT");
-        tx.setAmount(amount);
-        tx.setDate(LocalDateTime.now());
-        tx.setDescription(request.getConcept());
-        transactionRepo.save(tx);
+        Transaction transaction = new Transaction();
+        transaction.setAccount(account);
+        transaction.setType("DEPÓSITO");
+        transaction.setAmount(request.getAmount());
+        transaction.setDate(LocalDateTime.now());
+        transaction.setDescription(request.getDescription());
+        transactionRepository.save(transaction);
 
-        return new Respuesta("Depósito exitoso", true);
+        return new Respuesta("Depósito realizado con éxito", true);
     }
 
     public Respuesta withdraw(WithdrawRequest request) {
-        Account account = accountRepo.findById(request.getAccountId())
-            .orElseThrow(() -> new RuntimeException("Cuenta no encontrada"));
-        double amount = request.getAmount();
-        if (amount <= 0 || amount > 9000) {
-            return new Respuesta("Monto inválido para retiro", false);
+        Optional<Account> accountOpt = accountRepository.findById(request.getAccountId());
+        if (!accountOpt.isPresent()) {
+            return new Respuesta("Cuenta no encontrada", false);
         }
-        if (account.getBalance() < amount) {
+        Account account = accountOpt.get();
+        if (account.getBalance() < request.getAmount()) {
             return new Respuesta("Saldo insuficiente", false);
         }
-        account.setBalance(account.getBalance() - amount);
-        accountRepo.save(account);
+        account.setBalance(account.getBalance() - request.getAmount());
+        accountRepository.save(account);
 
-        Transaction tx = new Transaction();
-        tx.setAccount(account);
-        tx.setType("WITHDRAW");
-        tx.setAmount(amount);
-        tx.setDate(LocalDateTime.now());
-        tx.setDescription(request.getConcept());
-        transactionRepo.save(tx);
+        Transaction transaction = new Transaction();
+        transaction.setAccount(account);
+        transaction.setType("RETIRO");
+        transaction.setAmount(-request.getAmount());
+        transaction.setDate(LocalDateTime.now());
+        transaction.setDescription(request.getDescription());
+        transactionRepository.save(transaction);
 
-        return new Respuesta("Retiro exitoso", true);
+        return new Respuesta("Retiro realizado con éxito", true);
     }
 
     public Respuesta transfer(TransferRequest request) {
-        Account from = accountRepo.findById(request.getSenderId())
-            .orElseThrow(() -> new RuntimeException("Cuenta origen no encontrada"));
-        Account to = accountRepo.findById(request.getRecipientId())
-            .orElseThrow(() -> new RuntimeException("Cuenta destino no encontrada"));
-        double amount = request.getAmount();
-        if (amount <= 0 || amount > 20000) {
-            return new Respuesta("Monto inválido para transferencia", false);
+        Optional<Account> senderOpt = accountRepository.findById(request.getSenderAccountId());
+        Optional<Account> receiverOpt = accountRepository.findById(request.getReceiverAccountId());
+        if (!senderOpt.isPresent() || !receiverOpt.isPresent()) {
+            return new Respuesta("Cuenta origen o destino no encontrada", false);
         }
-        if (from.getBalance() < amount) {
+        Account sender = senderOpt.get();
+        Account receiver = receiverOpt.get();
+        if (sender.getBalance() < request.getAmount()) {
             return new Respuesta("Saldo insuficiente", false);
         }
+        sender.setBalance(sender.getBalance() - request.getAmount());
+        receiver.setBalance(receiver.getBalance() + request.getAmount());
+        accountRepository.save(sender);
+        accountRepository.save(receiver);
 
-        from.setBalance(from.getBalance() - amount);
-        to.setBalance(to.getBalance() + amount);
-        accountRepo.save(from);
-        accountRepo.save(to);
+        // Registrar movimientos en transaction
+        Transaction t1 = new Transaction();
+        t1.setAccount(sender);
+        t1.setType("TRANSFERENCIA ENVIADA");
+        t1.setAmount(-request.getAmount());
+        t1.setDate(LocalDateTime.now());
+        t1.setDescription("Transferencia a cuenta " + receiver.getAccountNumber());
+        transactionRepository.save(t1);
 
-        Transaction out = new Transaction();
-        out.setAccount(from);
-        out.setType("TRANSFER_OUT");
-        out.setAmount(amount);
-        out.setDate(LocalDateTime.now());
-        out.setDescription(request.getConcept());
-        transactionRepo.save(out);
+        Transaction t2 = new Transaction();
+        t2.setAccount(receiver);
+        t2.setType("TRANSFERENCIA RECIBIDA");
+        t2.setAmount(request.getAmount());
+        t2.setDate(LocalDateTime.now());
+        t2.setDescription("Transferencia de cuenta " + sender.getAccountNumber());
+        transactionRepository.save(t2);
 
-        Transaction in = new Transaction();
-        in.setAccount(to);
-        in.setType("TRANSFER_IN");
-        in.setAmount(amount);
-        in.setDate(LocalDateTime.now());
-        in.setDescription(request.getConcept());
-        transactionRepo.save(in);
-
-        return new Respuesta("Transferencia completada", true);
+        return new Respuesta("Transferencia realizada con éxito", true);
     }
 
     public List<Transaction> getTransactions(Long accountId) {
-        return transactionRepo.findByAccountIdOrderByDateDesc(accountId);
+        return transactionRepository.findByAccountId(accountId);
     }
 }

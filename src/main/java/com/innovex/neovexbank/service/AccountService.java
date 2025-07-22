@@ -2,30 +2,22 @@ package com.innovex.neovexbank.service;
 
 import com.innovex.neovexbank.model.Account;
 import com.innovex.neovexbank.repository.AccountRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
 public class AccountService {
 
-    private final AccountRepository accountRepository;
+    @Autowired
+    private AccountRepository accountRepository;
 
-    public AccountService(AccountRepository accountRepository) {
-        this.accountRepository = accountRepository;
+    public List<Account> getAccountsByCustomerId(Long customerId) {
+        return accountRepository.findByCustomerId(customerId);
     }
 
-    /**
-     * Suma el balance de todas las cuentas asociadas al usuario dado.
-     *
-     * @param userId ID del usuario
-     * @return total del balance
-     */
-    public double getBalanceByUserId(Long userId) {
-        // Asume que AccountRepository tiene un método List<Account> findByCustomerUserId(Long userId)
-        List<Account> cuentas = accountRepository.findByCustomerUserId(userId);
-        return cuentas.stream()
-                      .mapToDouble(Account::getBalance)
-                      .sum();
-    }
+    // Si usas UserId (por referencia desde Customer):
+    // public List<Account> getAccountsByUserId(Long userId) {
+    //     return accountRepository.findByCustomerUserId(userId);
+    // }
 }

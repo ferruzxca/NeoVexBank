@@ -3,38 +3,17 @@ package com.innovex.neovexbank.dto;
 public class DepositRequest {
     private Long accountId;
     private Double amount;
-    private String concept;
+    private String description; // <-- Añadido
 
-    public DepositRequest() {
-    }
+    // Getter y Setter para accountId
+    public Long getAccountId() { return accountId; }
+    public void setAccountId(Long accountId) { this.accountId = accountId; }
 
-    public DepositRequest(Long accountId, Double amount, String concept) {
-        this.accountId = accountId;
-        this.amount = amount;
-        this.concept = concept;
-    }
+    // Getter y Setter para amount
+    public Double getAmount() { return amount; }
+    public void setAmount(Double amount) { this.amount = amount; }
 
-    public Long getAccountId() {
-        return accountId;
-    }
-
-    public void setAccountId(Long accountId) {
-        this.accountId = accountId;
-    }
-
-    public Double getAmount() {
-        return amount;
-    }
-
-    public void setAmount(Double amount) {
-        this.amount = amount;
-    }
-
-    public String getConcept() {
-        return concept;
-    }
-
-    public void setConcept(String concept) {
-        this.concept = concept;
-    }
+    // Getter y Setter para description
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 }
